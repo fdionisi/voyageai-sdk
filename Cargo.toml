@@ -1,0 +1,12 @@
+[package]
+name = "voyageai-sdk"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+reqwest = { version = "0.12.7", features = ["json"] }
+secrecy = "0.8.0"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0.63"
+url = "2.5.2"
