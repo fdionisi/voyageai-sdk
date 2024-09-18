@@ -4,20 +4,20 @@ use crate::{Usage, VoyageAi, VoyageAiError};
 
 /// Represents the body parameters for the API request
 #[derive(Debug, Serialize, Deserialize)]
-pub struct EmbeddingsRequest {
+pub struct EmbeddingRequest {
     /// A single text string, or a list of texts as a list of strings.
     /// Currently, we have two constraints on the list:
     /// - The maximum length of the list is 128.
     /// - The total number of tokens in the list is at most 320K for voyage-2,
     ///   and 120K for voyage-large-2, voyage-finance-2, voyage-multilingual-2,
     ///   voyage-law-2, and voyage-code-2.
-    pub input: EmbeddingsInput,
+    pub input: EmbeddingInput,
 
     /// Name of the model.
-    pub model: EmbeddingsModel,
+    pub model: EmbeddingModel,
 
     /// Type of the input text.
-    pub input_type: Option<EmbeddingsInputType>,
+    pub input_type: Option<EmbeddingInputType>,
 
     /// Whether to truncate the input texts to fit within the context length.
     /// Defaults to true.
@@ -33,8 +33,8 @@ pub struct EmbeddingsRequest {
 }
 
 /// Represents the type of input text
-#[derive(Debug, Serialize, Deserialize)]
-pub enum EmbeddingsInputType {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum EmbeddingInputType {
     #[serde(rename = "query")]
     Query,
     #[serde(rename = "document")]
@@ -42,8 +42,12 @@ pub enum EmbeddingsInputType {
 }
 
 /// Represents the available embedding models
-#[derive(Debug, Serialize, Deserialize)]
-pub enum EmbeddingsModel {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum EmbeddingModel {
+    #[serde(rename = "voyage-3")]
+    Voyage3,
+    #[serde(rename = "voyage-lite-3")]
+    VoyageLite3,
     #[serde(rename = "voyage-2")]
     Voyage2,
     #[serde(rename = "voyage-large-2")]
@@ -61,14 +65,14 @@ pub enum EmbeddingsModel {
 /// Represents the input type, which can be either a single string or a list of strings
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum EmbeddingsInput {
+pub enum EmbeddingInput {
     Single(String),
     Multiple(Vec<String>),
 }
 
 /// Represents the response body for embeddings
 #[derive(Debug, Serialize, Deserialize)]
-pub struct EmbeddingsResponse {
+pub struct EmbeddingResponse {
     /// The object type, which is always "list".
     pub object: String,
 
@@ -77,6 +81,9 @@ pub struct EmbeddingsResponse {
 
     /// Usage information for the request.
     pub usage: Usage,
+
+    /// Name of the model.
+    pub model: EmbeddingModel,
 }
 
 /// Represents a single embedding object
@@ -91,16 +98,13 @@ pub struct EmbeddingObject {
 
     /// An integer representing the index of the embedding within the list of embeddings.
     pub index: i32,
-
-    /// Name of the model.
-    pub model: EmbeddingsModel,
 }
 
 impl VoyageAi {
     pub async fn embeddings(
         &self,
-        request: EmbeddingsRequest,
-    ) -> Result<EmbeddingsResponse, VoyageAiError> {
+        request: EmbeddingRequest,
+    ) -> Result<EmbeddingResponse, VoyageAiError> {
         self.post("/v1/embeddings", request).await
     }
 }
