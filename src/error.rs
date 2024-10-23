@@ -1,9 +1,11 @@
 use std::fmt;
 
+use http_client::http;
+
 #[derive(Debug, thiserror::Error)]
 pub enum VoyageAiError {
     #[error("Client error: {0}")]
-    ClientError(#[from] reqwest::Error),
+    ClientError(#[from] http::Error),
     #[error("HTTP error: {0}")]
     HttpError(HttpError),
 }
